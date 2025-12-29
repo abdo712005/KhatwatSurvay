@@ -1,171 +1,210 @@
-# 📚 Khatwat Quiz Application
+📚 Khatwat Quiz & Feedback System
 
-A complete **khatwat quiz application** powered by **Google Sheets** and **Google Apps Script**, with a **responsive Arabic UI**.  
-Easily deploy it on **GitHub Pages** or any web server.  
+A complete Arabic quiz and feedback system for students, built using
+HTML, CSS, JavaScript with Google Sheets + Google Apps Script as backend.
 
----
+The system is designed for graduation projects and can be deployed easily on
+GitHub Pages with no backend server required.
 
-## ✨ Features
+✨ Features
 
-- ✅ Student registration (name, email, age, academic stage)  
-- ✅ Fetch questions from Google Sheets with random shuffling  
-- ✅ Interactive quiz with instant feedback  
-- ✅ Highlight correct answers immediately  
-- ✅ Save results in Google Sheets  
-- ✅ Show final results with full review  
-- ✅ Clean, responsive Arabic design  
-- ✅ Separate files for easy deployment & maintenance  
+✅ Student registration (name, email, age, academic stage)
 
----
+✅ Fetch exam questions dynamically from Google Sheets
 
-## 📂 Project Structure
+✅ Randomized questions from multiple subjects
 
-```
-quiz-app-standalone/
-├── index-standalone.html    # HTML interface
-├── styles.css              # CSS styling
-├── script.js               # JavaScript functionality
-├── Code.gs                 # Apps Script backend
-└── README.md               # Documentation
-```
+✅ Interactive exam interface (one question at a time)
 
----
+✅ Automatic score calculation after exam completion
 
-## 🚀 Setup Instructions
+✅ Final results screen (correct / incorrect / percentage)
 
-### 1. Google Sheets Setup
-1. Open [Google Sheets](https://sheets.google.com)  
-2. Create a new spreadsheet and name it **Quiz App Data**  
-3. Copy the **Spreadsheet ID** from the URL (`/d/SPREADSHEET_ID/edit`)  
+✅ Post-exam feedback questionnaire
 
-#### Create a "Questions" sheet with these headers:
-| question | optionA | optionB | optionC | optionD | correct |
-|----------|---------|---------|---------|---------|---------|
+✅ Save exam answers + feedback directly to Google Sheets
 
-#### Example data:
-| question                | optionA     | optionB | optionC | optionD | correct |
-|--------------------------|------------|---------|---------|---------|---------|
-| What color is the sky?   | Blue       | Red     | Green   | Yellow  | A |
-| What is 2 + 2?           | 3          | 4       | 5       | 6       | B |
-| Capital of Egypt?        | Alexandria | Cairo   | Luxor   | Aswan   | B |
+✅ Arabic UI with clean and responsive design
 
----
+✅ No CORS issues (Form Submit + Hidden iframe solution)
 
-### 2. Google Apps Script Setup
-1. Go to [Google Apps Script](https://script.google.com)  
-2. Create a **New Project** → rename it **Quiz App Standalone**  
-3. Delete default code in `Code.gs`  
-4. Paste content from `Code-standalone.gs`  
-5. Replace `YOUR_SPREADSHEET_ID_HERE` with your Google Sheet ID  
+✅ Fully compatible with GitHub Pages
 
----
+📂 Project Structure
+khatwat-quiz-system/
+├── index.html        # Main HTML interface
+├── styles.css        # Styling & UI design
+├── script.js         # Frontend logic (exam + feedback)
+├── Code.gs           # Google Apps Script backend
+└── README.md         # Project documentation
 
-### 3. Deployment
-1. Click **Deploy → New deployment**  
-2. Choose **Web App**  
-3. Execute as: **Me**  
-4. Who has access: **Anyone**  
-5. Copy the generated **Web App URL**  
+🚀 Setup Instructions
+1️⃣ Google Sheets Setup
 
----
+Open Google Sheets
 
-### 4. Update JavaScript
-In `script.js`, update:  
-```js
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
-```
-with your Web App URL:  
-```js
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
-```
+Create a new spreadsheet
 
----
+Create the following sheets:
 
-## 🌍 Hosting on GitHub Pages
+📄 QuestionBank
 
-1. Create a new repository on [GitHub](https://github.com)  
-2. Upload these files:  
-   - `index-standalone.html` → rename to `index.html`  
-   - `styles.css`  
-   - `script-standalone.js` → rename to `script.js`  
-3. Update HTML reference in `index.html`:  
-   ```html
-   <script src="script.js"></script>
-   ```  
-4. Enable **GitHub Pages** in repository **Settings > Pages**  
+Headers must match exactly:
 
----
+QuestionID	QuestionText	OptionA	OptionB	OptionC	OptionD	CorrectAnswer	Subject
+📄 Exam_Responses
 
-## 🖥 Usage
+Used to store exam answers automatically.
 
-### Step 1 – Student Registration  
-- Enter name, email, age (optional), and stage  
-- Click **Start Exam**  
+| StudentEmail | QuestionID | Subject | SelectedAnswer | CorrectAnswer | IsCorrect |
 
-### Step 2 – Taking the Quiz  
-- Read each question carefully  
-- Select your answer  
-- Correct answer is shown instantly  
-- Click **Next** to continue  
-- On last question → **Finish Exam**  
+📄 Feedback
 
-### Step 3 – Review Results  
-- See your final score  
-- Review all answers  
-- Option to **Retake Exam** or **Register a New Student**  
+Used to store feedback answers.
 
----
+| Email | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 |
 
-## 🔄 Version Comparison
+2️⃣ Google Apps Script Setup
 
-| Integrated Version (Original) | Standalone Version |
-|-------------------------------|---------------------|
-| Single HTML file (HTML+CSS+JS) | Separate files |
-| Runs directly inside Apps Script | Deployable on GitHub Pages |
-| Easier initial setup | Easier maintenance & customization |
+Open Extensions → Apps Script from Google Sheets
 
----
+Replace the default code with the provided Code.gs
 
-## 🛠 Troubleshooting
+Make sure the script contains:
 
-1. **CORS Error** → Make sure Web App is deployed as **Anyone**  
-2. **Questions not loading** → Verify Spreadsheet ID, sheet name, and headers  
-3. **Results not saving** → Check Google Sheet permissions & Apps Script access  
+doGet() → fetch questions
 
----
+doPost() → save exam & feedback
 
-## 🎨 Customization
+Save the project
 
-### Change Colors (in `styles.css`):
-```css
-:root {
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-}
-```
+3️⃣ Deploy Google Apps Script
 
-### Extend Features:
-- Edit `Code-standalone.gs` for backend logic  
-- Update `script-standalone.js` for interactions  
-- Modify `index.html` for new UI elements  
+Click Deploy → New deployment
 
----
+Select Web App
 
-## 📖 Support
+Settings:
 
-- Check browser console for errors  
-- Confirm Apps Script deployment settings  
-- Verify correct Spreadsheet ID  
-- Ensure Web App URL is updated in JS  
+Execute as: Me
 
----
+Who has access: Anyone
 
-## 📜 License
+Deploy and copy the Web App URL
 
-This project is **open source** and free for **personal & educational use**.  
+4️⃣ Update Frontend Configuration
 
----
+In script.js, update:
 
-⚡ **Note:** Replace `YOUR_SPREADSHEET_ID_HERE` and `YOUR_APPS_SCRIPT_URL_HERE` with your actual values before publishing.
+const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+
+
+Replace it with your deployed Apps Script URL:
+
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+🌍 Deploy on GitHub Pages
+
+Create a new Public GitHub repository
+
+Upload:
+
+index.html
+
+styles.css
+
+script.js
+
+Go to Settings → Pages
+
+Select:
+
+Branch: main
+
+Folder: /root
+
+Save and open the generated GitHub Pages URL 🎉
+
+🖥 How the System Works
+Step 1 – Registration
+
+Student enters name, email, age, and academic stage
+
+Clicks Start Exam
+
+Step 2 – Exam
+
+Questions are loaded from Google Sheets
+
+One question is shown at a time
+
+Student must select an answer before moving on
+
+Progress bar updates dynamically
+
+Step 3 – Results
+
+System calculates:
+
+Total questions
+
+Correct answers
+
+Incorrect answers
+
+Percentage score
+
+Results are displayed clearly to the student
+
+Step 4 – Feedback
+
+Student completes feedback questions
+
+Feedback responses are saved to Google Sheets
+
+Final “Thank You” screen is shown
+
+🛠 Technical Notes
+
+Exam & feedback submission uses hidden HTML form + iframe
+
+Prevents page reload and avoids CORS issues
+
+Backend handled entirely by Google Apps Script
+
+Frontend is static → ideal for GitHub Pages
+
+🧪 Troubleshooting
+
+Questions not loading
+→ Check sheet name QuestionBank and headers
+
+Answers not saving
+→ Ensure Apps Script is deployed as Anyone
+
+Page redirects to OK
+→ Confirm the form uses target="hiddenFrame"
+
+🎓 Project Use Case
+
+Graduation project (Information Systems / Computer Science)
+
+Online assessments
+
+Surveys + quizzes
+
+Educational platforms
+
+📜 License
+
+This project is free for educational and academic use.
+You may modify and extend it for learning or graduation purposes.
+
+⚠️ Important:
+Before publishing, always make sure:
+
+Google Apps Script URL is correct
+
+Sheet names and headers are exact
+
+Repository is public for GitHub Pages
