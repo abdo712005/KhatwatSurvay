@@ -16,6 +16,14 @@ let answered = false;
 let mode = "exam";
 let studentEmail = "";
 
+
+function answersKey() {
+  return `khatwat_answers_${studentEmail}`;
+}
+
+function indexKey() {
+  return `khatwat_index_${studentEmail}`;
+}
 /* ========= FEEDBACK QUESTIONS ========= */
 const feedbackQuestions = [
   { id:"F1", question:"ما الشكل الذي تفضّله للامتحان النهائي؟", options:["امتحان موحّد شامل","امتحانات منفصلة لكل مادة","نموذج مزدوج","لا أفضّل"] },
@@ -93,52 +101,88 @@ async function loadQuestionsFromSheet() {
 async function startQuiz(e) {
   e.preventDefault();
 
+  // بيانات الطالب
   studentNameDisplay.textContent =
     document.getElementById("studentName").value;
   studentEmail = document.getElementById("studentEmail").value;
 
-  // 👇 إخفاء الفورم
+  // إخفاء فورم التسجيل
   registrationForm.classList.add("hidden");
 
-  // 👇 إظهار اللودينج
+  // إظهار شاشة التحميل
   loadingScreen.style.display = "flex";
 
   // تحميل الأسئلة
   await loadQuestionsFromSheet();
 
-  // 👇 إخفاء اللودينج
+  // إخفاء شاشة التحميل
   loadingScreen.style.display = "none";
 
-  // 👇 إظهار الامتحان
+  // إظهار الامتحان
   quizContainer.classList.remove("hidden");
 
   mode = "exam";
-  currentIndex = 0;
-  answers = [];
+
+  // 🔥 استرجاع الإجابات المحفوظة (لو موجودة)
+  const savedAnswers = localStorage.getItem(`khatwat_answers_${studentEmail}`);
+  const savedIndex = localStorage.getItem(`khatwat_index_${studentEmail}`);
+
+  if (savedAnswers) {
+    answers = JSON.parse(savedAnswers);
+    currentIndex = Number(savedIndex) || 0;
+  } else {
+    answers = [];
+    currentIndex = 0;
+  }
+
   answered = false;
 
+  // عرض أول سؤال أو السؤال اللي الطالب وقف عنده
   showExamQuestion();
 }
+
 
 
 /* ========= SHOW EXAM ========= */
 function showExamQuestion() {
   const q = questions[currentIndex];
+
+  // عرض نص السؤال
   questionText.textContent = q.question;
   optionsContainer.innerHTML = "";
 
+  // إنشاء الاختيارات
   ["A","B","C","D"].forEach(l => {
     const div = document.createElement("div");
     div.className = "option";
-    div.innerHTML = `<div class="option-letter">${l}</div><div class="option-text">${q["option"+l]}</div>`;
+    div.innerHTML = `
+      <div class="option-letter">${l}</div>
+      <div class="option-text">${q["option" + l]}</div>
+    `;
     div.onclick = () => selectExam(l, div);
     optionsContainer.appendChild(div);
   });
 
+  // الافتراضي: لم يتم الاختيار
   answered = false;
+
+  // 🔥 لو في إجابة محفوظة للسؤال ده
+  if (answers[currentIndex]) {
+    const selectedLetter = answers[currentIndex].selected;
+
+    document.querySelectorAll(".option").forEach(opt => {
+      const letter = opt.querySelector(".option-letter").textContent;
+      if (letter === selectedLetter) {
+        opt.classList.add("selected");
+        answered = true; // يسمح بالانتقال للسؤال التالي
+      }
+    });
+  }
+
   updateProgress();
   toggleButtons();
 }
+
 
 function selectExam(letter, el) {
   document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
@@ -152,8 +196,13 @@ function selectExam(letter, el) {
     isCorrect: letter === questions[currentIndex].correct
   };
 
+  // 👇 حفظ تلقائي
+ localStorage.setItem(answersKey(), JSON.stringify(answers));
+  localStorage.setItem(indexKey(), currentIndex);
+
   answered = true;
 }
+
 
 /* ========= NAV ========= */
 function nextQuestion() {
@@ -164,16 +213,36 @@ function nextQuestion() {
 
 /* ========= FINISH ========= */
 function finishAction() {
-  if (!answered) return warning.classList.remove("hidden");
+  if (!answered) {
+    warning.classList.remove("hidden");
+    return;
+  }
 
+  // ===== عند انتهاء الامتحان =====
   if (mode === "exam") {
+
+    // إرسال إجابات الامتحان
     submitExamForm();
+
+    // 🔥 مسح LocalStorage الخاص بالامتحان
+    localStorage.removeItem(`khatwat_answers_${studentEmail}`);
+    localStorage.removeItem(`khatwat_index_${studentEmail}`);
+
+    // الانتقال لمرحلة الفيدباك
     startFeedback();
-  } else {
+
+  } 
+  // ===== عند انتهاء الفيدباك =====
+  else {
+
+    // إرسال الفيدباك
     submitFeedbackForm();
+
+    // عرض النتائج
     showResults();
   }
 }
+
 
 /* ========= FEEDBACK ========= */
 function startFeedback() {
