@@ -64,12 +64,47 @@ const formFeedback = document.getElementById("formFeedback");
 /* ========= INIT ========= */
 document.addEventListener("DOMContentLoaded", () => {
   loadingScreen.style.display = "none";
-  registrationForm.classList.remove("hidden");
 
+  // ===== ربط الأحداث (زي ما هي) =====
   studentForm.addEventListener("submit", startQuiz);
   nextBtn.addEventListener("click", nextQuestion);
   finishBtn.addEventListener("click", finishAction);
+
+  // ===== محاولة استرجاع امتحان محفوظ =====
+  const lastEmail = localStorage.getItem("khatwat_last_email");
+
+  if (lastEmail) {
+    const savedAnswers = localStorage.getItem(`khatwat_answers_${lastEmail}`);
+    const savedIndex = localStorage.getItem(`khatwat_index_${lastEmail}`);
+
+    if (savedAnswers && savedIndex !== null) {
+      // كمّل الامتحان
+      studentEmail = lastEmail;
+
+      registrationForm.classList.add("hidden");
+      quizContainer.classList.remove("hidden");
+
+      loadingScreen.style.display = "flex";
+
+      loadQuestionsFromSheet().then(() => {
+        loadingScreen.style.display = "none";
+
+        answers = JSON.parse(savedAnswers);
+        currentIndex = Number(savedIndex) || 0;
+        mode = "exam";
+        answered = false;
+
+        showExamQuestion();
+      });
+
+      return; // ❗ مهم جدًا
+    }
+  }
+
+  // ===== مفيش امتحان محفوظ =====
+  registrationForm.classList.remove("hidden");
 });
+
 
 /* ========= LOAD QUESTIONS ========= */
 async function loadQuestionsFromSheet() {
@@ -105,6 +140,8 @@ async function startQuiz(e) {
   studentNameDisplay.textContent =
     document.getElementById("studentName").value;
   studentEmail = document.getElementById("studentEmail").value;
+  localStorage.setItem("khatwat_last_email", studentEmail);
+
 
   // إخفاء فورم التسجيل
   registrationForm.classList.add("hidden");
