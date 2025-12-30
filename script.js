@@ -112,15 +112,36 @@ async function loadQuestionsFromSheet() {
   const data = await res.json();
   const all = data.questions;
 
-  const pick = s => shuffle(all.filter(q => q.Subject === s)).slice(0, 10);
+  const SUBJECTS = [
+    "ARABIC",
+    "ENGLISH",
+    "MATH",
+    "SCIENCE",
+    "IQ"
+  ];
 
-  questions = shuffle([
-    ...pick("ARABIC"),
-    ...pick("ENGLISH"),
-    ...pick("MATH"),
-    ...pick("SCIENCE"),
-    ...pick("IQ")
-  ]).map(q => ({
+  const QUESTIONS_PER_SUBJECT = 10;
+  let finalQuestions = [];
+
+  SUBJECTS.forEach(subject => {
+    const subjectQuestions = all.filter(
+      q => q.Subject === subject
+    );
+
+    if (subjectQuestions.length < QUESTIONS_PER_SUBJECT) {
+      console.warn(
+        `⚠️ ${subject} يحتوي فقط على ${subjectQuestions.length} سؤال`
+      );
+    }
+
+    const selected = shuffle(subjectQuestions)
+      .slice(0, QUESTIONS_PER_SUBJECT);
+
+    finalQuestions.push(...selected);
+  });
+
+  // Shuffle نهائي لكل الامتحان
+  questions = shuffle(finalQuestions).map(q => ({
     id: q.QuestionID,
     question: q.QuestionText,
     optionA: q.OptionA,
